@@ -1,5 +1,8 @@
 "use strict";
 
+// URL gerada ao implantar o Google Apps Script como Aplicativo da Web.
+const SHEETS_WEB_APP_URL="https://script.google.com/macros/s/AKfycbxMsj3rc4QwEeRNpDLyvA46-iwS_OQryvxeNFVBdDGNKlaVId_tcyhl0GsvRNarIAVD/exec";
+
 const PROFILES={
  creative:{name:"Criativo Comunicador",icon:"✦",summary:"Você enxerga possibilidades onde outras pessoas veem o comum. Ideias, expressão e conexão são seus combustíveis — seu talento cresce quando pode criar e comunicar.",strengths:["Criatividade e imaginação","Comunicação envolvente","Facilidade para gerar ideias","Sensibilidade estética e cultural"],careers:["Design","Marketing","Publicidade","Conteúdo","Fotografia","Eventos"],courses:["Marketing Digital","Oratória","Canva","Design Gráfico"]},
  analytical:{name:"Lógico Analítico",icon:"⌁",summary:"Você gosta de entender como as coisas funcionam e encontrar respostas consistentes. Seu olhar atento, organizado e racional ajuda a resolver problemas com precisão.",strengths:["Raciocínio lógico","Atenção aos detalhes","Organização e planejamento","Resolução de problemas"],careers:["Tecnologia","Engenharia","Finanças","Dados","Programação","Qualidade"],courses:["Programação","Python","Excel Avançado com Power BI","Inteligência Artificial: ChatGPT e Claude"]},
@@ -51,23 +54,33 @@ async function submitLead(e){
  await saveLead(state.lead);renderResult(key);track("lead_submitted",{profile:key});show("result");btn.disabled=false;btn.innerHTML='Ver meu resultado completo <span>→</span>';
 }
 async function saveLead(lead){
- const leads=JSON.parse(localStorage.getItem("careerQuizLeads")||"[]");leads.push(lead);localStorage.setItem("careerQuizLeads",JSON.stringify(leads));
- 
- // GOOGLE SHEETS: Integrando com sua URL do Apps Script (NOVA)
- const URL_GOOGLE_SHEETS = "https://script.google.com/macros/s/AKfycbzr2Cmd7pUhKODm4Zn6BAMKH5sb4ke4Q5qH8eJLFl_yDwggdzPp8UHYNDewffCOeE_b/exec";
- 
- try {
-   await fetch(URL_GOOGLE_SHEETS, {
-     method: "POST",
-     body: JSON.stringify(lead)
-   });
-   console.info("[Sucesso] Lead salvo no Google Sheets!");
- } catch(erro) {
-   console.error("Erro ao salvar no Google Sheets:", erro);
+ // Backup local: o resultado nunca é perdido caso a internet esteja indisponível.
+ const leads=JSON.parse(localStorage.getItem("careerQuizLeads")||"[]");
+ leads.push(lead);
+ localStorage.setItem("careerQuizLeads",JSON.stringify(leads));
+
+ if(!SHEETS_WEB_APP_URL||SHEETS_WEB_APP_URL.includes("SUA_URL")){
+   console.warn("Google Sheets ainda não configurado: informe SHEETS_WEB_APP_URL.");
+   return {savedLocally:true,sentToSheets:false};
  }
- 
- return lead;
+
+ try{
+   // text/plain evita a requisição OPTIONS que costuma ser bloqueada pelo Apps Script.
+   // no-cors gera uma resposta opaca: o recebimento é confirmado diretamente na planilha.
+   await fetch(SHEETS_WEB_APP_URL,{
+     method:"POST",
+     mode:"no-cors",
+     headers:{"Content-Type":"text/plain;charset=utf-8"},
+     body:JSON.stringify(lead),
+     keepalive:true
+   });
+   return {savedLocally:true,sentToSheets:true};
+ }catch(error){
+   console.error("Não foi possível enviar o lead ao Google Sheets:",error);
+   return {savedLocally:true,sentToSheets:false,error:error.message};
+ }
 }
+
 function renderResult(key){
  const p=PROFILES[key];$("#result-icon").textContent=p.icon;$("#result-title").textContent=p.name;$("#result-summary").textContent=p.summary;
  $("#strengths").innerHTML=p.strengths.map(x=>"<li>"+x+"</li>").join("");$("#careers").innerHTML=p.careers.map(x=>"<span>"+x+"</span>").join("");$("#courses").innerHTML=p.courses.map(x=>"<li>"+x+"</li>").join("");
