@@ -35,7 +35,7 @@ function renderQuestion(){
  $("#progress-label").textContent="Pergunta "+n+" de "+Q.length;$("#progress-percent").textContent=p+"%";$("#progress-bar").style.width=p+"%";
  $(".progress").setAttribute("aria-valuenow",n);$("#back").style.visibility=n===1?"hidden":"visible";
  $("#answers").innerHTML="";
- q[1].forEach((label,i)=>{const b=document.createElement("button");b.type="button";b.className="answer"+(state.answers[state.current]===KEYS[i]?" selected":"");b.innerHTML='<span class="letter">'+String.fromCharCode(65+i)+'</span><span>'+label+'</span>';b.onclick=()=>select(KEYS[i],b);$("#answers").appendChild(b)});
+ q[1].forEach((label,i)=>{const b=document.createElement("button");b.type="button";b.className="answer"+(state.answers[state.current]===KEYS[i]?" selected":"");b.innerHTML='<span class="letter">'+String.fromCharCode(65+i)+'<\/span><span>'+label+'<\/span>';b.onclick=()=>select(KEYS[i],b);$("#answers").appendChild(b)});
 }
 function select(key,b){document.querySelectorAll(".answer").forEach(x=>x.classList.remove("selected"));b.classList.add("selected");state.answers[state.current]=key;setTimeout(()=>{if(state.current<Q.length-1){state.current++;renderQuestion();scrollTo({top:0,behavior:"smooth"})}else{calculate();show("lead");track("quiz_completed")}},180)}
 function calculate(){state.scores=Object.fromEntries(KEYS.map(k=>[k,0]));state.answers.forEach(k=>state.scores[k]++)}
@@ -48,19 +48,30 @@ async function submitLead(e){
  $("#form-error").textContent="";const btn=form.querySelector("[type=submit]");btn.disabled=true;btn.textContent="Salvando…";
  const data=Object.fromEntries(new FormData(form));const key=mainProfile();
  state.lead={id:crypto.randomUUID?crypto.randomUUID():"lead-"+Date.now(),createdAt:new Date().toISOString(),...data,privacyAccepted:true,profile:PROFILES[key].name,profileKey:key,scores:{...state.scores},answers:[...state.answers],source:"quiz-perfil-carreira"};
- await saveLead(state.lead);renderResult(key);track("lead_submitted",{profile:key});show("result");btn.disabled=false;btn.innerHTML='Ver meu resultado completo <span>→</span>';
+ await saveLead(state.lead);renderResult(key);track("lead_submitted",{profile:key});show("result");btn.disabled=false;btn.innerHTML='Ver meu resultado completo <span>→<\/span>';
 }
 async function saveLead(lead){
  const leads=JSON.parse(localStorage.getItem("careerQuizLeads")||"[]");leads.push(lead);localStorage.setItem("careerQuizLeads",JSON.stringify(leads));
- // GOOGLE SHEETS: publique um Apps Script como Web App e use:
- // await fetch("SUA_URL_DO_APPS_SCRIPT",{method:"POST",body:JSON.stringify(lead)});
- // SUPABASE: envie o lead ao endpoint REST da sua tabela com apikey e Authorization nos headers.
+ 
+ // GOOGLE SHEETS: Integrando com sua URL do Apps Script
+ const URL_GOOGLE_SHEETS = "https://script.google.com/macros/s/AKfycbyKurpJpx1UtZKmYnocm5_TgYdzHEj9iGYlrxjcI0Xil3YbDSyFqX2ImmseGORfIfP4/exec";
+ 
+ try {
+   await fetch(URL_GOOGLE_SHEETS, {
+     method: "POST",
+     body: JSON.stringify(lead)
+   });
+   console.info("[Sucesso] Lead salvo no Google Sheets!");
+ } catch(erro) {
+   console.error("Erro ao salvar no Google Sheets:", erro);
+ }
+ 
  return lead;
 }
 function renderResult(key){
  const p=PROFILES[key];$("#result-icon").textContent=p.icon;$("#result-title").textContent=p.name;$("#result-summary").textContent=p.summary;
- $("#strengths").innerHTML=p.strengths.map(x=>"<li>"+x+"</li>").join("");$("#careers").innerHTML=p.careers.map(x=>"<span>"+x+"</span>").join("");$("#courses").innerHTML=p.courses.map(x=>"<li>"+x+"</li>").join("");
- $("#score-list").innerHTML=Object.entries(state.scores).sort((a,b)=>b[1]-a[1]).map(([k,v])=>{const pc=Math.round(v/Q.length*100);return '<div class="score-row"><span>'+PROFILES[k].name+'</span><div class="score-track"><div class="score-fill" style="width:'+pc+'%"></div></div><span>'+pc+'%</span></div>'}).join("");
+ $("#strengths").innerHTML=p.strengths.map(x=>"<li>"+x+"<\/li>").join("");$("#careers").innerHTML=p.careers.map(x=>"<span>"+x+"<\/span>").join("");$("#courses").innerHTML=p.courses.map(x=>"<li>"+x+"<\/li>").join("");
+ $("#score-list").innerHTML=Object.entries(state.scores).sort((a,b)=>b[1]-a[1]).map(([k,v])=>{const pc=Math.round(v/Q.length*100);return '<div class="score-row"><span>'+PROFILES[k].name+'<\/span><div class="score-track"><div class="score-fill" style="width:'+pc+'%"><\/div><\/div><span>'+pc+'%<\/span><\/div>'}).join("");
  // Troque abaixo pelo WhatsApp oficial com DDI + DDD, somente números.
  const teamWhatsapp="5522998200315",student=(state.lead.studentName||"").split(" ")[0],msg=encodeURIComponent("Olá! Sou "+student+" e fiz o Teste de Perfil. Meu resultado foi "+p.name+". Quero saber mais sobre os cursos.");
  $("#whatsapp").href="https://wa.me/"+teamWhatsapp+"?text="+msg;
