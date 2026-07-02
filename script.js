@@ -1,7 +1,7 @@
 "use strict";
 
 // URL gerada ao implantar o Google Apps Script como Aplicativo da Web.
-const SHEETS_WEB_APP_URL="https://script.google.com/macros/s/AKfycbxMsj3rc4QwEeRNpDLyvA46-iwS_OQryvxeNFVBdDGNKlaVId_tcyhl0GsvRNarIAVD/exec";
+const SHEETS_WEB_APP_URL="https://script.google.com/macros/s/AKfycbynGq2sQiLNL8oqwNbPybyDy_QfLvzOxYZBnP9Jo9GGQnP9ZbqOG4w29LJ3PzZJZ9m7/exec";
 
 const PROFILES={
  creative:{name:"Criativo Comunicador",icon:"✦",summary:"Você enxerga possibilidades onde outras pessoas veem o comum. Ideias, expressão e conexão são seus combustíveis — seu talento cresce quando pode criar e comunicar.",strengths:["Criatividade e imaginação","Comunicação envolvente","Facilidade para gerar ideias","Sensibilidade estética e cultural"],careers:["Design","Marketing","Publicidade","Conteúdo","Fotografia","Eventos"],courses:["Marketing Digital","Oratória","Canva","Design Gráfico"]},
