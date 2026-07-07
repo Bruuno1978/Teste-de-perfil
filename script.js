@@ -29,7 +29,6 @@ const Q=[
 ];
 // Mantém o teste curto: somente as dez primeiras perguntas são utilizadas.
 Q.length=10;
-const CAPTURE_AFTER=3;
 const KEYS=["creative","analytical","practical","social","commercial"];
 const state={current:0,answers:[],scores:{},lead:null};
 const $=s=>document.querySelector(s);
@@ -46,8 +45,6 @@ function renderQuestion(){
 function select(key,b){
  document.querySelectorAll(".answer").forEach(x=>x.classList.remove("selected"));b.classList.add("selected");state.answers[state.current]=key;
  setTimeout(async()=>{
-   const answered=state.current+1;
-   if(answered===CAPTURE_AFTER&&!state.lead){show("lead");track("lead_gate_viewed");return}
    if(state.current<Q.length-1){state.current++;renderQuestion();scrollTo({top:0,behavior:"smooth"});return}
    await finishQuiz();
  },180)
@@ -62,8 +59,8 @@ async function submitLead(e){
  $("#form-error").textContent="";const btn=form.querySelector("[type=submit]");btn.disabled=true;btn.textContent="Salvando…";
  const data=Object.fromEntries(new FormData(form));
  state.lead={id:crypto.randomUUID?crypto.randomUUID():"lead-"+Date.now(),createdAt:new Date().toISOString(),...data,privacyAccepted:true,profile:"",profileKey:"",scores:{},answers:[...state.answers],source:"quiz-perfil-carreira",status:"Em andamento"};
- await saveLead(state.lead);track("lead_submitted",{stage:"question_3"});
- state.current=CAPTURE_AFTER;renderQuestion();show("quiz");btn.disabled=false;btn.innerHTML='Continuar o teste <span>→</span>';
+ await saveLead(state.lead);track("lead_submitted",{stage:"before_quiz"});track("quiz_started");
+ state.current=0;renderQuestion();show("quiz");btn.disabled=false;btn.innerHTML='Começar teste <span>→</span>';
 }
 async function finishQuiz(){
  calculate();const key=mainProfile();
@@ -112,7 +109,6 @@ function track(name,params={}){
  // GOOGLE ANALYTICS: após instalar, descomente: if(window.gtag) window.gtag("event",name,params);
  console.info("[Analytics]",name,params);
 }
-$("#start").onclick=()=>{show("quiz");renderQuestion();track("quiz_started")};
 $("#back").onclick=()=>{if(state.current>0){state.current--;renderQuestion()}};
 document.querySelectorAll('input[type="tel"]').forEach(x=>x.addEventListener("input",mask));
 $("#lead-form").addEventListener("submit",submitLead);
