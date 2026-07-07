@@ -27,6 +27,9 @@ const Q=[
  ["Como seria um dia de trabalho ideal?",["Variado, criativo e cheio de ideias","Com problemas complexos para resolver","Ativo e com tarefas concretas","Com colaboração e contato com pessoas","Com decisões, metas e negociações"]],
  ["Qual frase representa melhor você?",["Sempre existe outro jeito de olhar","Quero entender antes de concluir","Ideia boa é ideia colocada em prática","Crescemos quando ajudamos uns aos outros","Oportunidades são feitas para aproveitar"]]
 ];
+// Mantém o teste curto: somente as dez primeiras perguntas são utilizadas.
+Q.length=10;
+const CAPTURE_AFTER=3;
 const KEYS=["creative","analytical","practical","social","commercial"];
 const state={current:0,answers:[],scores:{},lead:null};
 const $=s=>document.querySelector(s);
@@ -40,7 +43,15 @@ function renderQuestion(){
  $("#answers").innerHTML="";
  q[1].forEach((label,i)=>{const b=document.createElement("button");b.type="button";b.className="answer"+(state.answers[state.current]===KEYS[i]?" selected":"");b.innerHTML='<span class="letter">'+String.fromCharCode(65+i)+'</span><span>'+label+'</span>';b.onclick=()=>select(KEYS[i],b);$("#answers").appendChild(b)});
 }
-function select(key,b){document.querySelectorAll(".answer").forEach(x=>x.classList.remove("selected"));b.classList.add("selected");state.answers[state.current]=key;setTimeout(()=>{if(state.current<Q.length-1){state.current++;renderQuestion();scrollTo({top:0,behavior:"smooth"})}else{calculate();show("lead");track("quiz_completed")}},180)}
+function select(key,b){
+ document.querySelectorAll(".answer").forEach(x=>x.classList.remove("selected"));b.classList.add("selected");state.answers[state.current]=key;
+ setTimeout(async()=>{
+   const answered=state.current+1;
+   if(answered===CAPTURE_AFTER&&!state.lead){show("lead");track("lead_gate_viewed");return}
+   if(state.current<Q.length-1){state.current++;renderQuestion();scrollTo({top:0,behavior:"smooth"});return}
+   await finishQuiz();
+ },180)
+}
 function calculate(){state.scores=Object.fromEntries(KEYS.map(k=>[k,0]));state.answers.forEach(k=>state.scores[k]++)}
 function mainProfile(){return KEYS.reduce((best,k)=>state.scores[k]>state.scores[best]?k:best)}
 function mask(e){let d=e.target.value.replace(/\D/g,"").slice(0,11);e.target.value=d.length<=2?"("+d:d.length<=6?d.replace(/(\d{2})(\d+)/,"($1) $2"):d.length<=10?d.replace(/(\d{2})(\d{4})(\d+)/,"($1) $2-$3"):d.replace(/(\d{2})(\d{5})(\d+)/,"($1) $2-$3")}
@@ -49,14 +60,21 @@ async function submitLead(e){
  e.preventDefault();const form=e.currentTarget;
  if(!valid(form)){$("#form-error").textContent="Revise os campos obrigatórios para liberar o resultado.";form.querySelector(".invalid")?.focus();return}
  $("#form-error").textContent="";const btn=form.querySelector("[type=submit]");btn.disabled=true;btn.textContent="Salvando…";
- const data=Object.fromEntries(new FormData(form));const key=mainProfile();
- state.lead={id:crypto.randomUUID?crypto.randomUUID():"lead-"+Date.now(),createdAt:new Date().toISOString(),...data,privacyAccepted:true,profile:PROFILES[key].name,profileKey:key,scores:{...state.scores},answers:[...state.answers],source:"quiz-perfil-carreira"};
- await saveLead(state.lead);renderResult(key);track("lead_submitted",{profile:key});show("result");btn.disabled=false;btn.innerHTML='Ver meu resultado completo <span>→</span>';
+ const data=Object.fromEntries(new FormData(form));
+ state.lead={id:crypto.randomUUID?crypto.randomUUID():"lead-"+Date.now(),createdAt:new Date().toISOString(),...data,privacyAccepted:true,profile:"",profileKey:"",scores:{},answers:[...state.answers],source:"quiz-perfil-carreira",status:"Em andamento"};
+ await saveLead(state.lead);track("lead_submitted",{stage:"question_3"});
+ state.current=CAPTURE_AFTER;renderQuestion();show("quiz");btn.disabled=false;btn.innerHTML='Continuar o teste <span>→</span>';
+}
+async function finishQuiz(){
+ calculate();const key=mainProfile();
+ state.lead={...state.lead,profile:PROFILES[key].name,profileKey:key,scores:{...state.scores},answers:[...state.answers],status:"Concluído",completedAt:new Date().toISOString()};
+ await saveLead(state.lead);renderResult(key);track("quiz_completed",{profile:key});show("result");
 }
 async function saveLead(lead){
  // Backup local: o resultado nunca é perdido caso a internet esteja indisponível.
  const leads=JSON.parse(localStorage.getItem("careerQuizLeads")||"[]");
- leads.push(lead);
+ const existingIndex=leads.findIndex(item=>item.id===lead.id);
+ if(existingIndex>=0) leads[existingIndex]=lead; else leads.push(lead);
  localStorage.setItem("careerQuizLeads",JSON.stringify(leads));
 
  if(!SHEETS_WEB_APP_URL||SHEETS_WEB_APP_URL.includes("SUA_URL")){
