@@ -4,8 +4,7 @@
  */
 const SHEET_NAME = "Leads";
 const HEADERS = [
-  "ID", "Data do cadastro", "Nome do aluno", "Idade", "WhatsApp do aluno",
-  "Cidade", "Escola / série", "Nome do responsável", "WhatsApp do responsável",
+  "ID", "Data do cadastro", "Nome", "WhatsApp",
   "Aceite da privacidade", "Perfil", "Pontuações", "Respostas", "Origem"
 ];
 
@@ -36,12 +35,7 @@ function doPost(e) {
       safeCell(lead.id),
       lead.createdAt ? new Date(lead.createdAt) : new Date(),
       safeCell(lead.studentName),
-      safeCell(lead.age),
       safeCell(lead.studentWhatsapp),
-      safeCell(lead.city),
-      safeCell(lead.schoolGrade),
-      safeCell(lead.guardianName),
-      safeCell(lead.guardianWhatsapp),
       lead.privacyAccepted === true ? "Sim" : "Não",
       safeCell(lead.profile),
       JSON.stringify(lead.scores || {}),
@@ -59,7 +53,7 @@ function doPost(e) {
 }
 
 function validateLead(lead) {
-  const required = ["studentName", "age", "studentWhatsapp", "city", "schoolGrade", "guardianName", "guardianWhatsapp", "profile"];
+  const required = ["studentName", "studentWhatsapp", "profile"];
   const missing = required.filter(function (field) { return !lead[field]; });
   if (missing.length) throw new Error("Campos ausentes: " + missing.join(", "));
   if (lead.privacyAccepted !== true) throw new Error("Política de privacidade não aceita.");

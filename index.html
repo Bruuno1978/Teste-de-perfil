@@ -24,10 +24,9 @@
 <section id="lead" class="screen lead-screen">
   <div class="form-head"><div class="unlock">🔓</div><div class="eyebrow">Teste concluído</div><h2>Seu resultado está pronto!</h2><p>Preencha seus dados para liberar seu perfil completo e suas recomendações.</p><div class="almost"><i></i></div><small>FALTA SÓ MAIS UM PASSO</small></div>
   <form id="lead-form" class="lead-form" novalidate>
-    <fieldset><legend><b>1</b><span>Sobre o aluno<small>Conte um pouco sobre você</small></span></legend><div class="fields">
-      <label class="wide">Nome do aluno<input name="studentName" autocomplete="name" placeholder="Seu nome completo" required></label><label>Idade<input name="age" type="number" min="12" max="25" inputmode="numeric" placeholder="Ex.: 16" required></label><label>WhatsApp<input name="studentWhatsapp" type="tel" inputmode="tel" placeholder="(00) 00000-0000" required></label><label>Cidade<input name="city" autocomplete="address-level2" placeholder="Sua cidade" required></label><label>Escola / série<input name="schoolGrade" placeholder="Ex.: Escola Central, 2º ano" required></label>
+    <fieldset><legend><b>1</b><span>Libere seu resultado<small>Preencha somente os dois campos abaixo</small></span></legend><div class="fields">
+      <label>Primeiro nome<input name="studentName" autocomplete="given-name" placeholder="Como podemos chamar você?" required></label><label>WhatsApp<input name="studentWhatsapp" type="tel" inputmode="tel" autocomplete="tel" placeholder="(00) 00000-0000" required></label>
     </div></fieldset>
-    <fieldset><legend><b>2</b><span>Responsável<small>Dados do pai, mãe ou responsável</small></span></legend><div class="fields"><label>Nome do responsável<input name="guardianName" placeholder="Nome completo" required></label><label>WhatsApp do responsável<input name="guardianWhatsapp" type="tel" inputmode="tel" placeholder="(00) 00000-0000" required></label></div></fieldset>
     <label class="consent"><input name="privacyAccepted" type="checkbox" required><span>Li e aceito a <button id="privacy-open" type="button">Política de Privacidade</button> e autorizo contato sobre cursos e oportunidades.</span></label><p id="form-error" class="error" role="alert"></p><button class="btn primary submit" type="submit">Ver meu resultado completo <span>→</span></button><small class="secure">🔒 Seus dados são protegidos e não serão compartilhados.</small>
   </form>
 </section>
