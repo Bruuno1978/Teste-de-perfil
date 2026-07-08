@@ -37,7 +37,7 @@ function doPost(e) {
       lead.createdAt ? new Date(lead.createdAt) : new Date(),
       safeCell(lead.studentName),
       safeCell(lead.studentWhatsapp),
-      lead.privacyAccepted === true ? "Sim" : "Não",
+      "Não solicitado",
       safeCell(lead.profile),
       JSON.stringify(lead.scores || {}),
       JSON.stringify(lead.answers || []),
@@ -66,7 +66,6 @@ function validateLead(lead) {
   const required = ["studentName", "studentWhatsapp"];
   const missing = required.filter(function (field) { return !lead[field]; });
   if (missing.length) throw new Error("Campos ausentes: " + missing.join(", "));
-  if (lead.privacyAccepted !== true) throw new Error("Política de privacidade não aceita.");
 }
 
 // Impede que textos iniciados por =, +, - ou @ sejam interpretados como fórmulas.

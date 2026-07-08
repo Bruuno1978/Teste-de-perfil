@@ -58,7 +58,7 @@ async function submitLead(e){
  if(!valid(form)){$("#form-error").textContent="Revise os campos obrigatórios para liberar o resultado.";form.querySelector(".invalid")?.focus();return}
  $("#form-error").textContent="";const btn=form.querySelector("[type=submit]");btn.disabled=true;btn.textContent="Salvando…";
  const data=Object.fromEntries(new FormData(form));
- state.lead={id:crypto.randomUUID?crypto.randomUUID():"lead-"+Date.now(),createdAt:new Date().toISOString(),...data,privacyAccepted:true,profile:"",profileKey:"",scores:{},answers:[...state.answers],source:"quiz-perfil-carreira",status:"Em andamento"};
+ state.lead={id:crypto.randomUUID?crypto.randomUUID():"lead-"+Date.now(),createdAt:new Date().toISOString(),...data,profile:"",profileKey:"",scores:{},answers:[...state.answers],source:"quiz-perfil-carreira",status:"Em andamento"};
  await saveLead(state.lead);track("lead_submitted",{stage:"before_quiz"});track("quiz_started");
  state.current=0;renderQuestion();show("quiz");btn.disabled=false;btn.innerHTML='Começar teste <span>→</span>';
 }
@@ -112,7 +112,5 @@ function track(name,params={}){
 $("#back").onclick=()=>{if(state.current>0){state.current--;renderQuestion()}};
 document.querySelectorAll('input[type="tel"]').forEach(x=>x.addEventListener("input",mask));
 $("#lead-form").addEventListener("submit",submitLead);
-$("#privacy-open").onclick=()=>$("#privacy").showModal();$("#privacy-close").onclick=()=>$("#privacy").close();
-$("#privacy-accept").onclick=()=>{$("#lead-form").elements.privacyAccepted.checked=true;$("#privacy").close()};
 $("#restart").onclick=()=>{state.current=0;state.answers=[];state.scores={};state.lead=null;$("#lead-form").reset();show("welcome")};
 window.addEventListener("beforeunload",e=>{if(state.answers.length&&!state.lead){e.preventDefault();e.returnValue=""}});
