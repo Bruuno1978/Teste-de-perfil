@@ -110,7 +110,7 @@ function renderResult(key){
  $("#whatsapp").href="https://wa.me/"+teamWhatsapp+"?text="+msg;
 }
 function track(name,params={}){
- // META PIXEL: após instalar, descomente: if(window.fbq) window.fbq("trackCustom",name,params);
+ if(window.fbq) window.fbq("trackCustom",name,params);
  // GOOGLE ANALYTICS: após instalar, descomente: if(window.gtag) window.gtag("event",name,params);
  console.info("[Analytics]",name,params);
 }
