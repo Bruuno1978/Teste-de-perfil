@@ -64,7 +64,7 @@ async function submitLead(e){
  $("#form-error").textContent="";const btn=form.querySelector("[type=submit]");btn.disabled=true;btn.textContent="Salvando…";
  const data=Object.fromEntries(new FormData(form));
  state.lead={id:crypto.randomUUID?crypto.randomUUID():"lead-"+Date.now(),createdAt:new Date().toISOString(),...data,profile:"",profileKey:"",scores:{},answers:[...state.answers],source:"quiz-perfil-carreira",status:"Em andamento"};
- await saveLead(state.lead);track("lead_submitted",{stage:"after_3_questions"});
+ await saveLead(state.lead);trackMetaStandard("Lead");track("lead_submitted",{stage:"after_3_questions"});
  continueQuizAfterLead();btn.disabled=false;btn.innerHTML='Continuar meu teste <span>→</span>';
 }
 async function finishQuiz(){
@@ -113,6 +113,10 @@ function track(name,params={}){
  if(window.fbq) window.fbq("trackCustom",name,params);
  // GOOGLE ANALYTICS: após instalar, descomente: if(window.gtag) window.gtag("event",name,params);
  console.info("[Analytics]",name,params);
+}
+function trackMetaStandard(name,params={}){
+ if(window.fbq) window.fbq("track",name,params);
+ console.info("[Meta Pixel]",name,params);
 }
 $("#start-test").onclick=startQuiz;
 $("#back").onclick=()=>{if(state.current>0){state.current--;renderQuestion()}};
