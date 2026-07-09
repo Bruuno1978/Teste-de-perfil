@@ -84,14 +84,30 @@ async function saveLead(lead){
    return {savedLocally:true,sentToSheets:false};
  }
 
+ const payload=JSON.stringify(lead);
+ console.info("[Sheets] Enviando lead",{
+   id:lead.id,
+   nome:lead.studentName,
+   whatsapp:lead.studentWhatsapp,
+   status:lead.status
+ });
+
  try{
+   // Caminho extra de envio: ajuda principalmente em celulares/navegadores que interrompem requisições.
+   if(navigator.sendBeacon){
+     const queued=navigator.sendBeacon(SHEETS_WEB_APP_URL,new Blob([payload],{type:"text/plain;charset=utf-8"}));
+     console.info("[Sheets] Beacon enviado/na fila:",queued);
+   }
+
    // text/plain evita a requisição OPTIONS que costuma ser bloqueada pelo Apps Script.
    // no-cors gera uma resposta opaca: o recebimento é confirmado diretamente na planilha.
    await fetch(SHEETS_WEB_APP_URL,{
      method:"POST",
      mode:"no-cors",
      headers:{"Content-Type":"text/plain;charset=utf-8"},
-     body:JSON.stringify(lead),
+     body:payload,
+     cache:"no-store",
+     redirect:"follow",
      keepalive:true
    });
    return {savedLocally:true,sentToSheets:true};
