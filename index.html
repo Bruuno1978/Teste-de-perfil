@@ -1,11 +1,15 @@
 <!doctype html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="description" content="Descubra seu perfil de inteligência e os caminhos profissionais que combinam com você.">
-  <meta name="theme-color" content="#0758d5"><title>Teste de Perfil de Inteligência e Carreira</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="styles.css">
+  <meta name="theme-color" content="#0758d5">
+  <title>Teste de Perfil de Inteligência e Carreira</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
   <!-- META PIXEL: cole o script base do Pixel aqui. -->
   <!-- GOOGLE ANALYTICS: cole a tag gtag.js aqui. -->
 </head>
@@ -14,25 +18,47 @@
 <main>
 <section id="welcome" class="screen welcome active">
   <div class="hero-copy">
-    <div class="eyebrow"><i></i> Seu futuro começa com autoconhecimento</div><h1>Qual talento pode levar você <em>mais longe?</em></h1><p>Cadastre-se gratuitamente e descubra quais carreiras têm mais a ver com seu jeito de pensar, criar e agir.</p>
-    <form id="lead-form" class="welcome-form" novalidate>
-      <div class="welcome-fields"><label>Primeiro nome<input name="studentName" autocomplete="given-name" placeholder="Como podemos chamar você?" required></label><label>WhatsApp<input name="studentWhatsapp" type="tel" inputmode="tel" autocomplete="tel" placeholder="(00) 00000-0000" required></label></div>
-      <p id="form-error" class="error" role="alert"></p><button class="btn primary welcome-submit" type="submit">Começar teste <span>→</span></button><small class="secure">🔒 Seus dados são protegidos e não serão compartilhados.</small>
-    </form>
+    <div class="eyebrow"><i></i> Seu futuro começa com autoconhecimento</div>
+    <h1>Qual talento pode levar você <em>mais longe?</em></h1>
+    <p>Responda 3 perguntas rápidas, libere a continuação do teste e descubra quais cursos combinam com seu jeito de pensar, criar e agir.</p>
+    <div class="welcome-form">
+      <button id="start-test" class="btn primary welcome-submit" type="button">Começar meu teste gratuito <span>→</span></button>
+      <small class="secure">Resultado personalizado em poucos minutos.</small>
+    </div>
   </div>
   <div class="hero-art" aria-hidden="true"><div class="profile-card"><label>SEU PERFIL</label><div class="spark">✦</div><strong>5 perfis.<br>Um combina mais com você.</strong><div><span>Criativo</span><span>Analítico</span><span>Executor</span><span>Social</span><span>Comercial</span></div></div><aside class="float one"><b>10</b> perguntas rápidas</aside><aside class="float two">✓ <b>Resultado<br>personalizado</b></aside></div>
   <div class="trust"><span>✓ Rápido e gratuito</span><span>✓ Resultado personalizado</span><span>✓ Sugestões de carreira</span></div>
 </section>
 <section id="quiz" class="screen quiz" aria-live="polite">
-  <div class="progress-copy"><span id="progress-label"></span><b id="progress-percent"></b></div><div class="progress" role="progressbar" aria-valuemin="1" aria-valuemax="10"><i id="progress-bar"></i></div>
-  <article class="quiz-card"><b id="question-number" class="number"></b><h2 id="question-title"></h2><p>Escolha a alternativa que mais combina com você.</p><div id="answers" class="answers"></div></article><button id="back" class="text-btn">← Voltar</button>
+  <div class="progress-copy"><span id="progress-label"></span><b id="progress-percent"></b></div>
+  <div class="progress" role="progressbar" aria-valuemin="1" aria-valuemax="10"><i id="progress-bar"></i></div>
+  <article class="quiz-card"><b id="question-number" class="number"></b><h2 id="question-title"></h2><p>Escolha a alternativa que mais combina com você.</p><div id="answers" class="answers"></div></article>
+  <button id="back" class="text-btn">← Voltar</button>
+</section>
+<section id="lead-gate" class="screen welcome lead-screen">
+  <div class="hero-copy">
+    <div class="eyebrow"><i></i> Você já completou 30% do teste</div>
+    <h1>Seu perfil começou a aparecer.</h1>
+    <p>Informe seu primeiro nome e WhatsApp para continuar e receber seu resultado personalizado no final.</p>
+    <form id="lead-form" class="welcome-form" novalidate>
+      <div class="welcome-fields"><label>Primeiro nome<input name="studentName" autocomplete="given-name" placeholder="Como podemos chamar você?" required></label><label>WhatsApp<input name="studentWhatsapp" type="tel" inputmode="tel" autocomplete="tel" placeholder="(00) 00000-0000" required></label></div>
+      <p id="form-error" class="error" role="alert"></p>
+      <button class="btn primary welcome-submit" type="submit">Continuar meu teste <span>→</span></button>
+      <small class="secure">Resultado na hora. Sem custo.</small>
+    </form>
+    <button id="gate-back" class="text-btn">← Voltar para a pergunta anterior</button>
+  </div>
+  <div class="hero-art" aria-hidden="true"><div class="profile-card"><label>EM ANDAMENTO</label><div class="spark">30%</div><strong>Falta pouco para revelar seu perfil.</strong><div><span>Cursos</span><span>Carreira</span><span>Talentos</span></div></div><aside class="float one"><b>7</b> perguntas restantes</aside><aside class="float two">✓ <b>Resultado<br>liberado</b></aside></div>
 </section>
 <section id="result" class="screen result">
   <div class="result-head"><div class="eyebrow light">Seu perfil predominante é</div><div id="result-icon" class="result-icon"></div><h2 id="result-title"></h2><p id="result-summary"></p></div>
   <div class="result-body"><article class="score-card"><h3>Seu mapa de talentos</h3><p>Todo mundo tem um pouco de cada perfil. Veja como ficaram suas respostas:</p><div id="score-list"></div></article>
     <div class="result-grid"><article class="info-card"><i>⚡</i><h3>Seus pontos fortes</h3><ul id="strengths"></ul></article><article class="info-card"><i>🚀</i><h3>Profissões que combinam</h3><div id="careers" class="chips"></div></article><article class="info-card courses"><i>🎓</i><h3>Cursos para começar</h3><ul id="courses"></ul></article></div>
-    <aside class="cta"><div><div class="eyebrow light">Dê o próximo passo</div><h3>Quer transformar seu talento em profissão?</h3><p>Fale com nossa equipe e descubra o curso ideal para você.</p></div><a id="whatsapp" class="btn whatsapp" target="_blank" rel="noopener">Falar com a equipe no WhatsApp ↗</a></aside><button id="restart" class="text-btn">↻ Refazer o teste</button>
+    <aside class="cta"><div><div class="eyebrow light">Dê o próximo passo</div><h3>Quer transformar seu talento em profissão?</h3><p>Fale com nossa equipe e descubra o curso ideal para você.</p></div><a id="whatsapp" class="btn whatsapp" target="_blank" rel="noopener">Falar com a equipe no WhatsApp ↗</a></aside>
+    <button id="restart" class="text-btn">↻ Refazer o teste</button>
   </div>
 </section>
 </main>
-<script src="script.js"></script></body></html>
+<script src="script.js"></script>
+</body>
+</html>
